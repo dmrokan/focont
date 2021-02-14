@@ -41,7 +41,7 @@ Furthermore, the algorithm can be used to calculate fixed-order controllers.
 This need additional entries in the described JSON or mat file;
 
 * **structure**: (string) 'FO' (meaning fixed-order or 'SOF' for SOF controller)
-* **nc**: (integer) The order of controller (by default it is chosen as the number of inputs)
+* **controller\_order**: (integer) The order of controller (by default it is chosen as the number of inputs)
 
 ## Installation
 
