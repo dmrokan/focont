@@ -4,7 +4,7 @@
 
 ## Static output feedback (SOF)
 
-The SOF is the simplest feedback controller structure. It basicaly feedbacks
+The SOF is the simplest feedback controller structure. It basically feedbacks
 the system output to the system input after multiplying a constant gain matrix.
 
 This package can calculate a stabilizing SOF gain which also optimizes the ![H2](/doc/h2.gif)

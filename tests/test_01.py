@@ -75,3 +75,13 @@ def test_01_08():
   foc.solve(pdata)
   foc.print_results(pdata)
 
+
+def test_01_09():
+  filepath = TEST_DIR + '/test_model_06_for_FO.mat'
+  pdata = system.load(filepath)
+  foc.solve(pdata)
+  foc.print_results(pdata)
+
+  assert False
+  
+

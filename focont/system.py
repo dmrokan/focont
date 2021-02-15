@@ -356,6 +356,8 @@ def load_from_mat_file(filename):
     if hasattr(mat[var_name], 'dtype') \
       and str(mat[var_name].dtype).startswith('<U'):
       mat[var_name] = str(mat[var_name][0])
+    elif var_name == 'controller_order':
+      mat[var_name] = int(mat[var_name][0][0])
 
   return mat
 
