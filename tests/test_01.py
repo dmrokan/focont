@@ -82,6 +82,3 @@ def test_01_09():
   foc.solve(pdata)
   foc.print_results(pdata)
 
-  assert False
-  
-

@@ -24,6 +24,10 @@ def message(msg, indent=0):
   print('-' * indent + ' ' + msg)
 
 
+def warning(msg, indent=0):
+  print('-' * indent + ' WARNING: ' + msg)
+
+
 class FocontError(Exception):
   """General exception class for focont.
   """

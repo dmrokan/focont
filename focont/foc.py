@@ -6,7 +6,7 @@ import numpy as np
 import scipy as sp
 from scipy.linalg import svdvals
 
-from focont.accessories import FocontError, message, is_stable
+from focont.accessories import FocontError, message, is_stable, warning
 
 
 def _adequate_real(pdata):
@@ -166,6 +166,7 @@ def _calculate_sof(pdata):
   progress = 10
   progress_step = max_iter // 10
 
+  inaccurate_result = False
   converged = False
   P = np.copy(Q)
   for i in range(max_iter):
@@ -179,7 +180,8 @@ def _calculate_sof(pdata):
     M3 = np.matmul(A_cbar.T, np.matmul(M1, A_cbar))
 
     P = Q + M2 + M3
-    dP = np.linalg.norm(P - P_pre) / np.linalg.norm(P)
+    normP = np.linalg.norm(P)
+    dP = np.linalg.norm(P - P_pre) / normP
 
     if dP < eps_conv:
       if np.isnan(dP) or np.isinf(dP):
@@ -188,6 +190,10 @@ def _calculate_sof(pdata):
         message('Iterations converged, a solution is found')
         converged = True
         break
+
+    if not inaccurate_result and normP * eps_conv > 1e2:
+      warning('Cost-to-go is so large. Results can be inaccurate.')
+      inaccurate_result = True
 
     if i % progress_step == 0:
       message('Progress:\t{}%, dP={}'.format(progress, dP))

@@ -10,6 +10,10 @@ the system output to the system input after multiplying a constant gain matrix.
 This package can calculate a stabilizing SOF gain which also optimizes the ![H2](/doc/h2.gif)
 norm of the closed loop system.
 
+However, this algorithm works under sufficient conditions. If the problem
+parameters (listed below) is not appropriate, the algorithm fails and
+prints an error message.
+
 (See the article, https://journals.sagepub.com/doi/abs/10.1177/0142331220943071 ,
 and the PhD thesis, http://hdl.handle.net/11693/54900 , for detailed
 information and analysis)
@@ -23,7 +27,10 @@ entries in the file are:
 
 * **A**: (2d array) System matrix
 * **B**: (2d array) Input matrix
-* **C**: (2d array) Output matrix.
+* **C**: (2d array) Output matrix,
+
+where `(A, B)` is stabilizable and `(C, A)` is observable (it is recommended
+to solve for the observable part of the system if `(C, A)` is detectable).
 
 If you want to adjust const function weights, these should also be provided:
 
