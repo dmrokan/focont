@@ -14,12 +14,12 @@
   ],
   "type": "C",
   "structure": "FO",
-  "zTs": 0.001,
-  "zQ0": "1e0I",
-  "zQ0cont": "1e0I",
-  "zQ": "1e0I",
-  "zR": "1e0I",
-  "zQcont": "1e0I",
-  "zRcont": "1e0I",
-  "zeps_conv": 1e-12
+  "Ts": 0.01,
+  "Q0": "1e0I",
+  "Q0cont": "1e0I",
+  "Q": "1e0I",
+  "R": "1e0I",
+  "Qcont": "1e0I",
+  "Rcont": "1e0I",
+  "eps_conv": 1e-12
 }

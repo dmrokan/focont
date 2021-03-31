@@ -66,6 +66,13 @@ Finally,
 pip install .
 ```
 
+### Also,
+
+It can be installed with pip from `pypi`.
+```
+pip install focont
+```
+
 ## Example
 
 ```python

@@ -4,7 +4,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
   long_description = fh.read()
 
 setuptools.setup(
-  name="focont", # Replace with your own username
+  name="focont",
   version="0.1",
   author="Okan Demir",
   author_email="demir@ee.bilkent.edu.tr",
@@ -19,5 +19,8 @@ setuptools.setup(
     "Operating System :: OS Independent",
   ],
   python_requires='>=3.8',
+  install_requires=[
+    'scipy', 'numpy',
+  ],
 )
 
