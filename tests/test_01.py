@@ -1,4 +1,5 @@
 import os
+import json
 
 from focont import foc, system
 
@@ -39,6 +40,16 @@ def test_01_05():
   pdata = system.load(filepath)
   foc.solve(pdata)
   foc.print_results(pdata)
+
+
+def test_01_05_01():
+  filepath = TEST_DIR + '/test_model_01.json'
+  with open(filepath, 'r') as fh:
+    input_data = json.load(fh)
+
+    pdata = system.load(input_data)
+    foc.solve(pdata)
+    foc.print_results(pdata)
 
 
 def test_01_06():

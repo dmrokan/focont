@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
   name="focont",
-  version="0.1",
+  version="0.1.1",
   author="Okan Demir",
   author_email="demir@ee.bilkent.edu.tr",
   description="Fixed order controller design tool",

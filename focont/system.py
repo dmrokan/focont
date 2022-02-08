@@ -1,6 +1,7 @@
 import sys
 import os
 import json
+from copy import deepcopy
 
 import numpy as np
 import scipy as sp
@@ -362,13 +363,17 @@ def load_from_mat_file(filename):
   return mat
 
 
-def load(filename):
-  _, ext = os.path.splitext(filename)
+def load(input_data):
+  if type(input_data) == str:
+    filename = input_data
+    _, ext = os.path.splitext(filename)
 
-  if ext == '.json':
-    pdata = load_from_json_file(filename)
-  elif ext == '.mat':
-    pdata = load_from_mat_file(filename)
+    if ext == '.json':
+      pdata = load_from_json_file(filename)
+    elif ext == '.mat':
+      pdata = load_from_mat_file(filename)
+  else:
+    pdata = deepcopy(input_data)
 
   if 'type' not in pdata:
     pdata['type'] = 'D'
