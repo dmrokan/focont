@@ -22,33 +22,11 @@ The algorithm is purposedly developed for discrete time systems, but it also wor
 for continuous time systems when the SOF is calculated for the zero-order hold
 discretized version with a sufficiently large sampling frequency.
 
-System definition can be provided by a JSON or MATLAB mat file. The required
-entries in the file are:
-
-* **A**: (2d array) System matrix
-* **B**: (2d array) Input matrix
-* **C**: (2d array) Output matrix,
-
-where `(A, B)` is stabilizable and `(C, A)` is observable (it is recommended
-to solve for the observable part of the system if `(C, A)` is detectable).
-
-If you want to adjust const function weights, these should also be provided:
-
-* **Q**: (2d array) Cost function weight for the state variables (similar to LQR problem)
-* **R**: (2d array) Cost function weight for the system input.
-
-If (A, B, C) defines a continuous time system, these should also be provided:
-
-* **type**: (string) 'C' (which means continuous, 'D' means discrete)
-* **Ts**: (number) Sampling period
-
-## Fixed order controller
-
 Furthermore, the algorithm can be used to calculate fixed-order controllers.
-This need additional entries in the described JSON or mat file;
+This need additional entries in the described JSON or mat file.
 
-* **structure**: (string) 'FO' (meaning fixed-order or 'SOF' for SOF controller)
-* **controller\_order**: (integer) The order of controller (by default it is chosen as the number of inputs)
+Please, vizit [API docs](/doc/focont.md) for the detailed information.
+
 
 ## Installation
 
