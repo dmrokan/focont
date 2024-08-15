@@ -1,4 +1,4 @@
-## Version 1.0.0
+## Version 1.0.1
 
 - Changed: Modenized build method, added linting
 - Added: Type annotations
