@@ -33,6 +33,10 @@ Please, vizit [API docs](/doc/focont.md) for the detailed information.
 Create and activate a virtual environment (this step is not required but recommended).
 Then,
 ```
+python3 -m venv venv
+source venv/bin/activate
+pip install -e '.[dev]'
+pytest
 pip install -r requirements.txt
 ```
 or

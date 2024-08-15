@@ -1,0 +1,64 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "focont"
+version = "1.0.0"
+dependencies = [
+  "scipy",
+  "numpy",
+]
+requires-python = ">=3.8"
+authors = [
+  {name = "Okan Demir", email = "okndemir@gmail.com"},
+]
+maintainers = [
+  {name = "Okan Demir", email = "okndemir@gmail.com"}
+]
+description = "Fixed order controller design tool"
+readme = "README.md"
+license = {file = "LICENSE.md"}
+keywords = ["optimal-control", "conroller-design", "control", "systems", "static-output-feedback"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.optional-dependencies]
+test = [
+  "pytest",
+  "pytest-randomly",
+]
+dev = [
+  "pytest",
+  "pytest-randomly",
+  "black",
+  "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/dmrokan/focont"
+Documentation = "https://github.com/dmrokan/focont/blob/main/doc/focont.md"
+Repository = "https://github.com/dmrokan/focont"
+"Bug Tracker" = "https://github.com/dmrokan/focont/issues"
+Changelog = "https://github.com/dmrokan/focont/blob/main/CHANGELOG.md"
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+include = 'focont\/.*\.pyi?$'
+
+[tool.mypy]
+python_version = "3.11"
+exclude = "build|tests"
+strict = true
+warn_unreachable = true
+implicit_reexport = true
+show_error_codes = true
+show_column_numbers = true
+ignore_missing_imports = true
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
