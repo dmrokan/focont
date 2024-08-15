@@ -7,6 +7,10 @@ on:
     tags:
       - "v*"
   workflow_call:
+    inputs:
+      pypi-url:
+        required: true
+        type: string
 
 jobs:
   build:
@@ -62,7 +66,6 @@ jobs:
           path: dist/
       - name: Publish distribution to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
-
 
   github-release:
     name: >-

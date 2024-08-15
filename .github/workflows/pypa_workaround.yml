@@ -10,3 +10,6 @@ on:
 jobs:
   call-reusable-workflow:
     uses: ./.github/workflows/build.yml
+    secrets: inherit
+    with:
+      pypi-url: https://pypi.org/p/focont
