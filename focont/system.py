@@ -22,6 +22,171 @@ from .accessories import (
 PData = Dict[str, Any]
 
 
+class ProblemDataStructure:
+    """
+    Problem data structure
+
+    Users can provide a file path or a Python dictionary to the
+    :py:meth:`focont.system.load` function to define the problem.
+
+    If ``problem_data`` it is a ``dict[str, Any]``, it must contain the definitions below.
+    """
+
+    A: list[list[float]]
+    """
+    System's state matrix (required)
+    """
+
+    B: list[list[float]]
+    """
+    System's input matrix (required)
+    """
+
+    C: list[list[float]]
+    """
+    System's output matrix (required)
+    """
+
+    Q: list[list[float]] | str
+    """
+    Cost function weight on system's state vector $x_t$
+
+    Variants:
+
+      - Q must be symmetric semi-positive definite matrix.
+      - ``Q = "cI"`` is equivalent to $Q = cI$
+
+    Default value: $Q = C^TC$
+    """
+
+    R: list[list[float]] | str
+    """
+    Cost function weight on system's input vector $u_t$
+
+    Variants:
+
+      - R must be symmetric positive definite matrix.
+      - ``R = "cI"`` is equivalent to $R = cI$
+
+    Default value: $R = I$
+    """
+
+    type: str
+    """
+    System type, discrete ("D") or continuous ("C") time. If it is a continuous time
+    system it will be discretized first by applying ZOH discretization method.
+
+    Default value: "D"
+    """
+
+    Ts: float
+    """
+    The discretization period in seconds.
+
+    Default value: 1e-2
+    """
+
+    max_iter: int
+    """
+    The maximum number of iterations allowed.
+
+    Default value: 1000000
+    """
+
+    eps_conv: float
+    """
+    Termination tolerance on the solver. Terminates if
+
+    $$||P-P_{pre}||_2^2/||P||_2^2 < eps_conv$$
+
+    Default value: 1e-12
+    """
+
+    structure: str
+    """
+    The resulting controller structure.
+
+    Variants:
+
+      - "SOF": Static output feedback controller.
+      - "FO": Fixed order controller.
+    """
+
+    zoh_calc_step: int
+    """
+    Number of time domain intervals used in ZOH discretization. ZOH is
+    calculated by a numerical integral when continuous time system's
+    state matrix is singular.
+
+    Default value: 256
+    """
+
+    Q0: list[list[float]] | str
+    """
+    Variants:
+
+      - Q0 must be symmetric semi-positive definite matrix.
+      - ``Q0 = "cI"`` is equivalent to $Q0 = cI$
+
+    Default value: $Q0 = I$
+    """
+
+    R0: list[list[float]] | str
+    """
+    Variants:
+
+      - R0 must be symmetric positive definite matrix.
+      - ``R0 = "cI"`` is equivalent to $R_0 = cI$
+
+    Default value: $R_0 = I$
+    """
+
+    Ccont: list[list[str]]
+    """
+    The output matrix of controller.
+
+    Default value: $Q_{cont} = \\[ I ~~ 0 \\]$
+    """
+
+    Dcont: list[list[str]]
+    """
+    The input to output matrix of controller. (required when :py:attr:`structre` is ``"FO"``)
+    """
+
+    Qcont: list[list[str]]
+    """
+    When the control structure is ``"FO"``, the system state and input vectors are expanded by adding
+    new state variables. Therefore, the cost function weights ``Q``, ``Q0`` and ``R`` should also
+    be expanded. Expanded versions are:
+
+    $$Q_{extended} = \\diag\\{ Q, Q_{cont} \\}$$
+
+    Default value: $Q_{cont} = I$
+    """
+
+    Rcont: list[list[str]]
+    """
+    When the control structure is ``"FO"``, the system state and input vectors are expanded by adding
+    new state variables. Therefore, the cost function weights ``Q``, ``Q0`` and ``R`` should also
+    be expanded. Expanded versions are:
+
+    $$R_{extended} = \\diag\\{ R, R_{cont} \\}$$
+
+    Default value: $R_{cont} = I$
+    """
+
+    Q0cont: list[list[str]]
+    """
+    When the control structure is ``"FO"``, the system state and input vectors are expanded by adding
+    new state variables. Therefore, the cost function weights ``Q``, ``Q0`` and ``R`` should also
+    be expanded. Expanded versions are:
+
+    $$Q0_{extended} = \\diag\\{ Q_0, Q0_{cont} \\}$$
+
+    Default value: $Q0_{cont} = I$
+    """
+
+
 def _parse_matrix_definition(d: str, n: int) -> FOCArray | None:
     if type(d) == str:
         d = d.strip()
@@ -82,7 +247,6 @@ def _validate_input(pdata: PData) -> None:
             )
 
         pdata["C"] = np.array(pdata["C"])
-
     elif type(pdata["C"]) == str:
         try:
             pdata["C"] = _parse_matrix_definition(pdata["C"], n)
@@ -336,65 +500,30 @@ def load_from_mat_file(filename: str) -> PData:
 
 
 def load(input_data: PData | str) -> PData:
-    r"""
+    """
     Load Fixed Order Controller problem paramters from
     a Python data structure or from a json, or mat file.
 
-    :arg input_data dict_or_str: The source from which the problem
-            parameters will be loaded.
+    :param input_data: The source from which the problem parameters will be loaded.
+    :return: Dictionary of all required problem data to be provided `foc.solve`.
 
     `input_data` can be json or mat filepath. In this case, file will
     be read and problem parameters data structre will be created from
-    the json or mat file.
+    the json or mat file. Or, it can be dictionary of proplem parameters.
 
     *NOTE*: Matrices must be Python array of array of floats with appropriate row
     and column sizes (They are not `numpy` arrays!). Some matrices can be defined
     as a string for ease of use. E.g:
-        `C = 'I'` or `Q = '1e-2I'`
 
-        They will be translated to `numpy` identity matrices, `np.eye(n)` and
-        `1e-2 * np.eye(n)`, where `n` is the dimension of LTI systems state vector.
+    `C = 'I'` or `Q = '1e-2I'`
 
-    `focont` expects the following paramters:
-        * `A`: System matrix of the LTI sytem ($A \in \mathbb{R}_{n \times n}$).
-        * `B`: Input matrix ($B \in \mathbb{R}_{n \times m}$).
-        * `C`: Output matrix (can be defined as a string, see the note above.)
-                ($C \in \mathbb{R}_{r \times n}$).
+    They will be translated to `numpy` identity matrices, `np.eye(n)` and
+    `1e-2 * np.eye(n)`, where `n` is the dimension of LTI systems state vector.
 
-        * `Q` (optional): Cost function weight for LTI system states (can be defined as a string.)
-        `Q` must have the same dimension as `A` and must be symmetric and
-        semi-positive definite. If it is not provided, its default value is 'I'.
-        * `R` (optional): Cost function weight for LTI system's input. (can be a string.)
-        `R` must be square and have the same number of columns as `B`. It must be
-        symmetric and positive definite. Its default value is 'I'.
-        * `Q0' (optional): It has the same properties as `Q`, but it is used for
-        calculating an appropriate realization of the LTI system as an intermediary
-        step of the algorithm. Its default value is 'I'.
-        * `type` (optional): It can be 'D' if the LTI system is discrete and
-        'C' if it is continuous. Its default value is 'D'.
-        * `Ts` (optional): It is the sampling period used for ZOH discretization of
-        the LTI system. Its default value is '0.01'.
-        * `max_iter` (optional): Dynamic programming iterations limit. Its default
-        value is '1e6'.
-        * `eps_conv` (optional): Condition for convergence. If change in the cost-to-go
-        function is smaller than this value, iterations will be terminated. Its
-        default value is '1e-12'.
-        * `zoh_calc_step` (optional): Max number of iterations used in ZOH discretization. Its
-        default value is '256'.
-        * `structure` (optional): It is 'SOF', if a static output feedback is wanted
-        to be calculated. It is 'FO' if controller is dynamic.
-
-        If controller structre is dynamic, then the paramters below can be provided.
-            * `Ccont` (optional): Output matrix of the proposed dynamic controller.
-            Its default value is '$I_{m \times m}$'.
-            * `Dcont` (optional): Input to output gain of the controller. Its
-            default value is '$0_{m \times r}$'.
-            * `Qcont` (optional): Cost function weight on controller's state vector.
-            Its default value is 'I'.
-            * `Q0cont` (optional)
-            * `Rcont` (optional): Cons function weight on controller's input vector.
-            Its default value is 'I'.
+    Please check :py:class:`focont.system.ProblemDataStructure` for detailed
+    information on the problem data.
     """
+
     pdata: PData = {}
     if type(input_data) == str:
         filename = input_data

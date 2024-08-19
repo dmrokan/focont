@@ -343,6 +343,21 @@ def solve(pdata: PData) -> None:
     problem for the given LTI (discrete or continous) system by applying the
     proposed solution method [1-2].
 
+    :param pdata: Python dictionary of problem parameters.
+
+    Controller is calculated by performing the following steps;
+
+    1. Find an appropriate realization of the LTI system.
+    #. Apply the approximate dyanmic programming (ADP) iterations to
+       calculate the stabilizing controller which minimize a quadratic cost
+       function similart to the well-known linear quadratic regulator (LQR)
+       problem.
+
+    Please check :py:class:`focont.system.ProblemDataStructure` for detailed
+    information on the problem data.
+
+    *NOTE*: Solution is appended to the input argument ``pdata``.
+
     [1]: Demir, O. and Özbay, H., 2020. Static output feedback stabilization
     of discrete time linear time invariant systems based on approximate dynamic
     programming. Transactions of the Institute of Measurement and Control,
@@ -351,18 +366,6 @@ def solve(pdata: PData) -> None:
     [2]: Demir, O., 2020. Optimality based structured control of distributed
     parameter systems (Doctoral dissertation, Bilkent University).
 
-    :arg pdata dict: Python dictionary of problem parameters obtained from
-    `system.load` function of `focont` library.
-
-    Controller is calculated by performing the following steps;
-
-    1. Find an appropriate realization of the LTI system.
-    2. Apply the approximate dyanmic programming (ADP) iterations to
-    calculate the stabilizing controller which minimize a quadratic cost
-    function similart to the well-known linear quadratic regulator (LQR)
-    problem.
-
-    *NOTE*: Solution is appended to the input argument `pdata`.
     """
 
     _validate(pdata)
@@ -375,6 +378,12 @@ def solve(pdata: PData) -> None:
 
 
 def print_results(pdata: PData) -> None:
+    """
+    Prints the resulting controller's system matrices and closed loop system's eigenvalues.
+
+    :param pdata: Problem data
+    """
+
     with np.printoptions(precision=4):
         if pdata["structure"] == "SOF":
             message("Stabilizing SOF gain:", indent=1)
@@ -401,14 +410,15 @@ def get_controller(pdata: PData, i: int = -1, j: int = -1) -> Any:
     """
     Returns the controller in SciPy discrete LTI system form.
 
-    :arg pdata dict: Problem data structure.
-    :arg i int: Controller output index for the MIMO controller.
-    :arg j int: Controller input index for the MIMO controller.
+    :param pdata: Problem data structure.
+    :param i: Controller output index for the MIMO controller.
+    :param j: Controller input index for the MIMO controller.
 
     Returns an `m` by `r` Python array when `i` or `j` is not provided.
     The ith row and jth column of the return value gives the discrete LTI
     system from jth input to the ith output.
     """
+
     if i == -1 or j == -1:
         return pdata["controller_lti"]
     elif isinstance(pdata["controller_lti"], list):
@@ -423,24 +433,25 @@ def get_controller(pdata: PData, i: int = -1, j: int = -1) -> Any:
             raise FocontError(
                 f"Controller dimension is {m}x{n}." f"Can not access ({i}, {j})"
             )
-    else:
-        return None
+
+    return None
 
 
 def get_closed_loop_system(pdata: PData, i: int = -1, j: int = -1) -> Any:
     """
     Returns the closed loop system in SciPy discrete LTI system form.
 
-    :arg pdata dict: Problem data structure.
-    :arg i int: Controller output index for the MIMO controller.
-    :arg j int: Controller input index for the MIMO controller.
+    :param pdata: Problem data structure.
+    :param i: Controller output index for the MIMO controller.
+    :param j: Controller input index for the MIMO controller.
 
-    :return scipy.signal.lti: SciPy (discrete) LTI system representation.
+    :return: SciPy (discrete) LTI system representation.
 
     Returns an `m` by `r` Python array when `i` or `j` is not provided.
     The ith row and jth column of the return value gives the discrete LTI
     system from jth input to the ith output.
     """
+
     if i == -1 or j == -1:
         return pdata["closed_loop_lti"]
     elif isinstance(pdata["closed_loop_lti"], list):
@@ -460,15 +471,16 @@ def get_closed_loop_system(pdata: PData, i: int = -1, j: int = -1) -> Any:
 
 
 def norm(pdata: PData, cl: bool = True) -> float:
-    r"""
-    Calculates $\mathcal{H}_2$ norm of the closed or open loop
+    """
+    Calculates $\\mathcal{H}_2$ norm of the closed or open loop
     MIMO system.
 
-    :arg pdata dict: Problem data structure.
-    :arg cl object: Calculate closed loop norm if it is `True`.
+    :param pdata: Problem data structure.
+    :param cl: Calculate closed loop systems 2-norm if it is `True`.
 
-    :return float: $\mathcal{H}_2$ norm.
+    :return: $\\mathcal{H}_2$ norm.
     """
+
     result: float = np.inf
 
     if cl:
@@ -480,15 +492,16 @@ def norm(pdata: PData, cl: bool = True) -> float:
 
 
 def h2_improvement(pdata: PData) -> float:
-    r"""
-    Compares the $\mathcal{H}_2$ norms of the closed loop
+    """
+    Compares the $\\mathcal{H}_2$ norms of the closed loop
     system obtained by the algortihm and the open loop system
     if the open loop system is also stable.
 
-    :arg pdata dict: Problem data structure.
+    :param pdata: Problem data structure.
 
-    :return float: Ratio of the closed and open loop $\mathcal{H}_2$ norms.
+    :return: Ratio of the closed and open loop $\\mathcal{H}_2$ norms.
     """
+
     ol_stable: bool = pdata["open_loop_stable"]
 
     if not ol_stable:
@@ -513,6 +526,22 @@ def h2_improvement(pdata: PData) -> float:
 def bode(
     pdata: PData, loop: str, N: int = 256, xscale: str = "log", i: int = -1, j: int = -1
 ) -> Tuple[FOCArray, FOCArray]:
+    """
+    Calculate closed or open loop frequency response of the system defined in the problem data.
+
+    :param pdata: Problem data
+    :param loop: Open loop (``"open"``) or closed loop (``"closed"``) frequency response
+    :param N: calculate at ``N`` distinct frequency points
+    :param xscale: Frequency is in logarithmic (``"log"``) or linear (``"lin"``) scale
+    :param i: Calculate for ``i`` th output
+    :param j: Calculate for ``j`` th input
+
+    :return: A tuple of 2D complex ``numpy.array``
+
+    The second entry in the returned tuple has a 2D list of frequency responses
+    and the first entry has a 2D list of corresponding frequencies.
+    """
+
     lti: Any
     if loop == "open":
         lti = pdata["open_loop_lti"]

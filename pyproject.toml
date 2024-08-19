@@ -32,10 +32,13 @@ test = [
   "pytest-randomly",
 ]
 dev = [
-  "pytest",
-  "pytest-randomly",
+  "focont[test]",
   "black",
   "mypy",
+]
+doc = [
+  "sphinx",
+  "sphinx-markdown-builder==0.6.6",
 ]
 
 [project.urls]
@@ -52,7 +55,7 @@ include = 'focont\/.*\.pyi?$'
 
 [tool.mypy]
 python_version = "3.11"
-exclude = "build|tests"
+exclude = "build|tests|_docs"
 strict = true
 warn_unreachable = true
 implicit_reexport = true

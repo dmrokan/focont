@@ -16,11 +16,25 @@ from numpy.typing import (
 )
 
 # TODO: Make this type equivalent to ndarray dtype
-DType = Any  # TypeVar("DType", bound=np.float64)
+DType = Any
 FOCArray = NDArray[DType]
 
 
-def is_stable(type: str, evals: ArrayLike) -> bool:
+def is_stable(type: str, evals: FOCArray) -> bool:
+    """
+    Check if the eigenvalues satisfies the system stability condition.
+
+    :param type: Discrete (``"D"``) or continuous (``"C"``) time system
+    :param evals: Vector of eigenvalues of state matrix $A$
+
+    :return: ``True`` if stable
+
+    System is stable if
+
+      - $|evals| < 1$ for discrete time
+      - $\\Re\\{evals\\} < 0$ for continuous time
+    """
+
     if type == "C":
         if np.any(np.real(evals) >= 0):
             return False
@@ -35,11 +49,32 @@ def is_stable(type: str, evals: ArrayLike) -> bool:
         raise FocontError("Undefined system type '{}'.".format(type))
 
 
-def is_symmetric(a: NDArray[DType], rtol: float = 1e-05, atol: float = 1e-08) -> bool:
+def is_symmetric(a: NDArray[DType], atol: float = 1e-05, rtol: float = 1e-08) -> bool:
+    """
+    Check if square matrix ``a`` is symmetric.
+
+    :param a: Square numpy matrix
+    :param atol: Absolute tolerance
+    :param rtol: Relative tolernace
+
+    :return: ``True`` if symmetric.
+
+    Check `numpy.allclose <https://numpy.org/devdocs/reference/generated/numpy.allclose.html#numpy.allclose>`
+    for more information.
+    """
+
     return np.allclose(a, a.T, rtol=rtol, atol=atol)
 
 
-def h2_norm(lti_mimo: Any) -> float:
+def h2_norm(lti_mimo: List[List[Any]]) -> float:
+    """
+    Calculate the energy of impulse response of the LTI system.
+
+    :param lti_mimo: 2D list of LTI system in `scipy.signal.lti` or `scipy.signal.dlti` structure.
+
+    :return: 2D list of impulse responses in `numpy.array` structre
+    """
+
     impulse_responses: List[List[NDArray[DType]]] = [[]]
     max_t: int = 0
 
@@ -93,6 +128,18 @@ def convert_to_lti(
     D: FOCArray = np.zeros((0, 0)),
     t: str = "D",
 ) -> Any:
+    """
+    Create MIMO ``scipy.signal.lti`` or ``scipy.signal.dlti`` from state space matrices.
+
+    :param A: State matrix $A \\in \\mathbb{R}^{n \\times n}$
+    :param B: Input matrix $B \\in \\mathbb{R}^{n \\times m}$
+    :param C: State matrix $C \\in \\mathbb{R}^{r \\times n}$
+    :param D: Input to output matrix $D \\in \\mathbb{R}^{r \\times m}$
+    :param t: Discrete (``"D"``) or continuous (``"C"``) time
+
+    :return: 2D (r by n) list of ``scipy.signal.lti`` or ``scipy.signal.dlti`` instances.
+    """
+
     n: int = A.shape[0]
     m: int = B.shape[1]
     r: int = C.shape[0]
@@ -125,6 +172,23 @@ def convert_to_lti(
 def freq_response(
     A: FOCArray, B: FOCArray, C: FOCArray, D: FOCArray, N: int, xscale: str = "log"
 ) -> Tuple[FOCArray, FOCArray]:
+    """
+    Calculate the frequency response of discrete time MIMO LTI system.
+
+    :param A: State matrix
+    :param B: Input matrix
+    :param C: Output matrix
+    :param D: Input to output matrix
+    :param N: Calculate the frequency response at ``N`` distinct points.
+    :param xscale: Frequency is in logarithmic (``"log"``) or linear (``"lin"``) scale
+
+    :return: A tuple of 2D complex ``numpy.array``
+
+    The second entry in the returned tuple has a 2D list of frequency responses
+    and the first entry has a 2D list of corresponding frequencies.
+    """
+
+    f: FOCArray
     if xscale == "log":
         f = np.logspace(-3, 0, N)
     elif xscale == "lin":
@@ -164,7 +228,7 @@ def warning(msg: str, indent: int = 0) -> None:
 
 
 class FocontError(Exception):
-    """General exception class for focont."""
+    """General exception object"""
 
     def __init__(self: Self, message: str = "An error occured.") -> None:
         self.message = message
