@@ -472,13 +472,13 @@ def get_closed_loop_system(pdata: PData, i: int = -1, j: int = -1) -> Any:
 
 def norm(pdata: PData, cl: bool = True) -> float:
     """
-    Calculates $\\mathcal{H}_2$ norm of the closed or open loop
+    Calculates :math:`\\mathcal{H}_2` norm of the closed or open loop
     MIMO system.
 
     :param pdata: Problem data structure.
     :param cl: Calculate closed loop systems 2-norm if it is `True`.
 
-    :return: $\\mathcal{H}_2$ norm.
+    :return: :math:`\\mathcal{H}_2` norm.
     """
 
     result: float = np.inf
@@ -493,13 +493,13 @@ def norm(pdata: PData, cl: bool = True) -> float:
 
 def h2_improvement(pdata: PData) -> float:
     """
-    Compares the $\\mathcal{H}_2$ norms of the closed loop
+    Compares the :math:`\\mathcal{H}_2` norms of the closed loop
     system obtained by the algortihm and the open loop system
     if the open loop system is also stable.
 
     :param pdata: Problem data structure.
 
-    :return: Ratio of the closed and open loop $\\mathcal{H}_2$ norms.
+    :return: Ratio of the closed and open loop :math:`\\mathcal{H}_2` norms.
     """
 
     ol_stable: bool = pdata["open_loop_stable"]

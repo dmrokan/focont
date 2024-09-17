@@ -25,14 +25,14 @@ def is_stable(type: str, evals: FOCArray) -> bool:
     Check if the eigenvalues satisfies the system stability condition.
 
     :param type: Discrete (``"D"``) or continuous (``"C"``) time system
-    :param evals: Vector of eigenvalues of state matrix $A$
+    :param evals: Vector of eigenvalues of state matrix :math:`A`
 
     :return: ``True`` if stable
 
     System is stable if
 
-      - $|evals| < 1$ for discrete time
-      - $\\Re\\{evals\\} < 0$ for continuous time
+      - :math:`|evals| < 1` for discrete time
+      - :math:`\\mathbb{Re}[evals] < 0` for continuous time
     """
 
     if type == "C":
@@ -131,10 +131,10 @@ def convert_to_lti(
     """
     Create MIMO ``scipy.signal.lti`` or ``scipy.signal.dlti`` from state space matrices.
 
-    :param A: State matrix $A \\in \\mathbb{R}^{n \\times n}$
-    :param B: Input matrix $B \\in \\mathbb{R}^{n \\times m}$
-    :param C: State matrix $C \\in \\mathbb{R}^{r \\times n}$
-    :param D: Input to output matrix $D \\in \\mathbb{R}^{r \\times m}$
+    :param A: State matrix :math:`A \\in \\mathbb{R}^{n \\times n}`
+    :param B: Input matrix :math:`B \\in \\mathbb{R}^{n \\times m}`
+    :param C: State matrix :math:`C \\in \\mathbb{R}^{r \\times n}`
+    :param D: Input to output matrix :math:`D \\in \\mathbb{R}^{r \\times m}`
     :param t: Discrete (``"D"``) or continuous (``"C"``) time
 
     :return: 2D (r by n) list of ``scipy.signal.lti`` or ``scipy.signal.dlti`` instances.

@@ -49,26 +49,26 @@ class ProblemDataStructure:
 
     Q: list[list[float]] | str
     """
-    Cost function weight on system's state vector $x_t$
+    Cost function weight on system's state vector :math:`x_t`
 
     Variants:
 
       - Q must be symmetric semi-positive definite matrix.
-      - ``Q = "cI"`` is equivalent to $Q = cI$
+      - ``Q = "cI"`` is equivalent to :math:`Q = cI`
 
-    Default value: $Q = C^TC$
+    Default value: :math:`Q = C^TC`
     """
 
     R: list[list[float]] | str
     """
-    Cost function weight on system's input vector $u_t$
+    Cost function weight on system's input vector :math:`u_t`
 
     Variants:
 
       - R must be symmetric positive definite matrix.
-      - ``R = "cI"`` is equivalent to $R = cI$
+      - ``R = "cI"`` is equivalent to :math:`R = cI`
 
-    Default value: $R = I$
+    Default value: :math:`R = I`
     """
 
     type: str
@@ -97,7 +97,9 @@ class ProblemDataStructure:
     """
     Termination tolerance on the solver. Terminates if
 
-    $$||P-P_{pre}||_2^2/||P||_2^2 < eps_conv$$
+    .. math::
+
+       ||P-P_{pre}||_2^2/||P||_2^2 < eps_conv
 
     Default value: 1e-12
     """
@@ -126,9 +128,9 @@ class ProblemDataStructure:
     Variants:
 
       - Q0 must be symmetric semi-positive definite matrix.
-      - ``Q0 = "cI"`` is equivalent to $Q0 = cI$
+      - ``Q0 = "cI"`` is equivalent to :math:`Q0 = cI`
 
-    Default value: $Q0 = I$
+    Default value: :math:`Q0 = I`
     """
 
     R0: list[list[float]] | str
@@ -136,16 +138,16 @@ class ProblemDataStructure:
     Variants:
 
       - R0 must be symmetric positive definite matrix.
-      - ``R0 = "cI"`` is equivalent to $R_0 = cI$
+      - ``R0 = "cI"`` is equivalent to :math:`R_0 = cI`
 
-    Default value: $R_0 = I$
+    Default value: :math:`R_0 = I`
     """
 
     Ccont: list[list[str]]
     """
     The output matrix of controller.
 
-    Default value: $Q_{cont} = \\[ I ~~ 0 \\]$
+    Default value: :math:`Q_{cont} = \\[ I ~~ 0 \\]`
     """
 
     Dcont: list[list[str]]
@@ -159,9 +161,11 @@ class ProblemDataStructure:
     new state variables. Therefore, the cost function weights ``Q``, ``Q0`` and ``R`` should also
     be expanded. Expanded versions are:
 
-    $$Q_{extended} = \\diag\\{ Q, Q_{cont} \\}$$
+    .. math::
 
-    Default value: $Q_{cont} = I$
+       Q_{extended} = \\textrm{diag}\\set{ Q, Q_{cont} }
+
+    Default value: :math:`Q_{cont} = I`
     """
 
     Rcont: list[list[str]]
@@ -170,9 +174,11 @@ class ProblemDataStructure:
     new state variables. Therefore, the cost function weights ``Q``, ``Q0`` and ``R`` should also
     be expanded. Expanded versions are:
 
-    $$R_{extended} = \\diag\\{ R, R_{cont} \\}$$
+    .. math::
 
-    Default value: $R_{cont} = I$
+       R_{extended} = \\textrm{diag}\\set{ R, R_{cont} }
+
+    Default value: :math:`R_{cont} = I`
     """
 
     Q0cont: list[list[str]]
@@ -181,9 +187,11 @@ class ProblemDataStructure:
     new state variables. Therefore, the cost function weights ``Q``, ``Q0`` and ``R`` should also
     be expanded. Expanded versions are:
 
-    $$Q0_{extended} = \\diag\\{ Q_0, Q0_{cont} \\}$$
+    .. math::
 
-    Default value: $Q0_{cont} = I$
+       Q0_{extended} = \\textrm{diag}\\set{ Q_0, Q0_{cont} }
+
+    Default value: :math:`Q0_{cont} = I`
     """
 
 

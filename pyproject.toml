@@ -51,7 +51,7 @@ Changelog = "https://github.com/dmrokan/focont/blob/main/CHANGELOG.md"
 [tool.black]
 line-length = 88
 target-version = ['py38']
-include = 'focont\/.*\.pyi?$'
+include = 'focont\/.*\.pyi?$|tests\/.*\.pyi?$'
 
 [tool.mypy]
 python_version = "3.11"

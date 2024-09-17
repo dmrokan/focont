@@ -15,10 +15,10 @@ General exception object
 Create MIMO `scipy.signal.lti` or `scipy.signal.dlti` from state space matrices.
 
 * **Parameters:**
-  * **A** – State matrix $A in mathbb{R}^{n times n}$
-  * **B** – Input matrix $B in mathbb{R}^{n times m}$
-  * **C** – State matrix $C in mathbb{R}^{r times n}$
-  * **D** – Input to output matrix $D in mathbb{R}^{r times m}$
+  * **A** – State matrix $A \in \mathbb{R}^{n \times n}$
+  * **B** – Input matrix $B \in \mathbb{R}^{n \times m}$
+  * **C** – State matrix $C \in \mathbb{R}^{r \times n}$
+  * **D** – Input to output matrix $D \in \mathbb{R}^{r \times m}$
   * **t** – Discrete (`"D"`) or continuous (`"C"`) time
 * **Returns:**
   2D (r by n) list of `scipy.signal.lti` or `scipy.signal.dlti` instances.
@@ -62,7 +62,7 @@ Check if the eigenvalues satisfies the system stability condition.
 System is stable if
 
 > - $|evals| < 1$ for discrete time
-> - $Re{evals} < 0$ for continuous time
+> - $\mathbb{Re}[evals] < 0$ for continuous time
 
 ### focont.accessories.is_symmetric(a: ndarray[Any, dtype[Any]], atol: float = 1e-05, rtol: float = 1e-08)
 
@@ -131,25 +131,25 @@ system from jth input to the ith output.
 
 ### focont.foc.h2_improvement(pdata: Dict[str, Any])
 
-Compares the $mathcal{H}_2$ norms of the closed loop
+Compares the $\mathcal{H}_2$ norms of the closed loop
 system obtained by the algortihm and the open loop system
 if the open loop system is also stable.
 
 * **Parameters:**
   **pdata** – Problem data structure.
 * **Returns:**
-  Ratio of the closed and open loop $mathcal{H}_2$ norms.
+  Ratio of the closed and open loop $\mathcal{H}_2$ norms.
 
 ### focont.foc.norm(pdata: Dict[str, Any], cl: bool = True)
 
-Calculates $mathcal{H}_2$ norm of the closed or open loop
+Calculates $\mathcal{H}_2$ norm of the closed or open loop
 MIMO system.
 
 * **Parameters:**
   * **pdata** – Problem data structure.
   * **cl** – Calculate closed loop systems 2-norm if it is True.
 * **Returns:**
-  $mathcal{H}_2$ norm.
+  $\mathcal{H}_2$ norm.
 
 ### focont.foc.print_results(pdata: Dict[str, Any])
 
@@ -217,7 +217,7 @@ System’s output matrix (required)
 
 The output matrix of controller.
 
-Default value: $Q_{cont} = [ I ~~ 0 ]$
+Default value: $Q_{cont} = \[ I ~~ 0 \]$
 
 #### Dcont *: list[list[str]]*
 
@@ -249,7 +249,9 @@ When the control structure is `"FO"`, the system state and input vectors are exp
 new state variables. Therefore, the cost function weights `Q`, `Q0` and `R` should also
 be expanded. Expanded versions are:
 
-$$Q0_{extended} = diag{ Q_0, Q0_{cont} }$$
+$$
+Q0_{extended} = \textrm{diag}\set{ Q_0, Q0_{cont} }
+$$
 
 Default value: $Q0_{cont} = I$
 
@@ -259,7 +261,9 @@ When the control structure is `"FO"`, the system state and input vectors are exp
 new state variables. Therefore, the cost function weights `Q`, `Q0` and `R` should also
 be expanded. Expanded versions are:
 
-$$Q_{extended} = diag{ Q, Q_{cont} }$$
+$$
+Q_{extended} = \textrm{diag}\set{ Q, Q_{cont} }
+$$
 
 Default value: $Q_{cont} = I$
 
@@ -289,7 +293,9 @@ When the control structure is `"FO"`, the system state and input vectors are exp
 new state variables. Therefore, the cost function weights `Q`, `Q0` and `R` should also
 be expanded. Expanded versions are:
 
-$$R_{extended} = diag{ R, R_{cont} }$$
+$$
+R_{extended} = \textrm{diag}\set{ R, R_{cont} }
+$$
 
 Default value: $R_{cont} = I$
 
@@ -303,7 +309,9 @@ Default value: 1e-2
 
 Termination tolerance on the solver. Terminates if
 
-$$||P-P_{pre}||_2^2/||P||_2^2 < eps_conv$$
+$$
+||P-P_{pre}||_2^2/||P||_2^2 < eps_conv
+$$
 
 Default value: 1e-12
 
