@@ -36,7 +36,7 @@ pip install focont
 Consider this highly simplified real life example below which is a naively discretized version
 of the ideal Newton motion equations. It is a model of a ball's motion on an inclined plane.
 
-![Simple model](https://raw.githubusercontent.com/dmrokan/focont/refs/heads/main/docs/readme_example.png)
+![Simple model](https://raw.githubusercontent.com/dmrokan/focont/main/docs/readme_example.png)
 
 In the model, the top of plane is assumed to be the origin and force $F$ pushes the ball to
 move it to the origin. The force $F_g$ is the effect of gravity and there is a mild friction
@@ -147,7 +147,7 @@ Meaning that, $K$ must be chosen as $K=-0.6147$. For this problem, the closed lo
 is stable when $-2 < K < -0.01$ according to the result of Octave's `rlocus` method. When
 the cost $J$ is calculated for $K$ in this interval the plot below is obtained.
 
-![Cost vs K](https://raw.githubusercontent.com/dmrokan/focont/refs/heads/main/docs/cost_vs_K.png)
+![Cost vs K](https://raw.githubusercontent.com/dmrokan/focont/main/docs/cost_vs_K.png)
 
 In this plot, the minimum cost is $7.35$ when $K=-0.7306$ which is close to the cost $7.38$ at $K=-0.6147$.
 
@@ -161,7 +161,7 @@ $$
 In this case, the SOF gain $K=-0.2717$ is obtained. The plot below shows the differences between
 $p_t, v_t$ and $u_t$ for both SOF gains $K$.
 
-![Cost vs K](https://raw.githubusercontent.com/dmrokan/focont/refs/heads/main/docs/result_plots.png)
+![Cost vs K](https://raw.githubusercontent.com/dmrokan/focont/main/docs/result_plots.png)
 
 The dashed lines are obtained when the consumed energy is largely penalized in the cost function.
 As it can be seen, it gets closer to the origin slower, but consumed energy (blue) is smaller.
