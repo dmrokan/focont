@@ -14,7 +14,6 @@ The algorithm is mainly developed for discrete time systems, but it may also com
 
 Furthermore, the algorithm can be used to calculate fixed-order controllers. Please, check [tests](./tests/test_01.py) for examples and [docs](./docs/focont.md) for detailed information.
 
-
 ## Installation
 
 ```
@@ -26,7 +25,7 @@ pytest
 
 ### Also,
 
-It can be installed via pip from `pypi`.
+It can be installed via pip.
 ```
 pip install focont
 ```
@@ -49,15 +48,17 @@ $$
 
 where $t \in \\{ 0, 1, \dots \\}$ is the discrete time instants, $p_t$ is the vertical position
 $v_t$ is the velocity and is accumulated in $p_t$. The term $+0.01 p_t$ is a result of
-constant $F_g$ force.
+constant $F_g$ force which make the system unstable. Meaning that, the ball move downwards
+by accelerating when $F = 0$.
 
 $$
-v_{t+1} = v_t - 0.01 v_t + F_t
+v_{t+1} = v_t - 0.01 v_t + u_t \\
+u_t = F_t - F_g
 $$
 
 where $v_t$ is the velocity. The second term is damping and the last term is the force that
-pushes the ball upwards. Finally, it is assumed that the sum of vertical position and velocity
-can be measured.
+pushes the ball upwards which also must exceed $F_g$ to achieve this. Finally, it is assumed
+that the sum of vertical position and velocity can be measured.
 
 $$
 y_t = p_t + v_t
@@ -73,15 +74,15 @@ where
 
 $$
 x_t = \begin{bmatrix}
-    p_{t+1} \\
-    v_{t+1}
+    p_{t} \\
+    v_{t}
 \end{bmatrix} ~~ A = \begin{bmatrix}
     1.01 & 0.1 \\
     0 & 0.99
 \end{bmatrix} ~~ B = \begin{bmatrix}
     0 \\
     1
-\end{bmatrix} ~~ C = \[ 1 ~~ 1 \]
+\end{bmatrix} ~~ C = \left[ 1 ~~ 1 \right]
 $$
 
 **Problem:**
@@ -89,13 +90,13 @@ $$
 Calculate a static output feedback (SOF) gain $K$ that minimizes
 
 $$
-J = \sum_{t=0}^{\infty} p_t^2+F_t^2
+J = \sum_{t=0}^{\infty} p_t^2+u_t^2
 $$
 
 where force is a function of measurment
 
 $$
-F_t = Ky_t
+u_t = Ky_t
 $$
 
 In other terms, how can I use the measurment $y_t$ to move the ball to the top
@@ -116,10 +117,10 @@ def main():
     ]
     C = [ [ 1, 1 ] ]
     Q = [
-        [ 1, 0 ],
+        [ 1, 0 ], # Weight of p_t
         [ 0, 0 ],
     ]
-    R = [ [ 1 ] ]
+    R = [ [ 1 ] ] # Weight of u_t
     data = { "A": A, "B": B, "C": C, "Q": Q, "R": R }
 
     pdata = system.load(data)
@@ -143,25 +144,54 @@ Prints out:
 [0.8907 0.4946]
 ```
 
-Meaning that, $K$ must be chosen as $K=-0.6147$. For this problem, the closed loop system
+Meaning that, $K$ must be chosen as $K=-0.6147$. In other words, the ball must be
+pushed as strong as $K$ times the measurement $y_t$ at each time instant $t$.
+
+For this problem, the closed loop system
 is stable when $-2 < K < -0.01$ according to the result of Octave's `rlocus` method. When
-the cost $J$ is calculated for $K$ in this interval the plot below is obtained.
+the cost $J$ is calculated for $K$ in this interval starting from inital $p_0=-1$ and $v_0=0$
+the plot below is obtained.
 
 ![Cost vs K](https://raw.githubusercontent.com/dmrokan/focont/main/docs/cost_vs_K.png)
 
 In this plot, the minimum cost is $7.35$ when $K=-0.7306$ which is close to the cost $7.38$ at $K=-0.6147$.
 
-Let us modify the cost function and attach a higher weight to the consumed energy. Meaning that,
+Let us modify the cost function and assign a higher weight to the consumed energy. Meaning that,
 we do not care much about how quickly the ball is transported but we want to spend less energy.
 
 $$
-J = \sum_{t=0}^{\infty} p_t^2+10 F_t^2
+J = \sum_{t=0}^{\infty} p_t^2+10 u_t^2
 $$
 
 In this case, the SOF gain $K=-0.2717$ is obtained. The plot below shows the differences between
 $p_t, v_t$ and $u_t$ for both SOF gains $K$.
 
-![Cost vs K](https://raw.githubusercontent.com/dmrokan/focont/main/docs/result_plots.png)
+![Results](https://raw.githubusercontent.com/dmrokan/focont/main/docs/result_plots.png)
+
+> Results for different cost weigths. Position (red), velocity (yellow), force $u_t$ (blue), $J = \sum_{t=0}^{\infty} p_t^2+ u_t^2$ (solid), $J = \sum_{t=0}^{\infty} p_t^2+10 u_t^2$ (dashed)
+
 
 The dashed lines are obtained when the consumed energy is largely penalized in the cost function.
-As it can be seen, it gets closer to the origin slower, but consumed energy (blue) is smaller.
+As it can be seen, it gets closer to the origin slower (red), but consumed energy (blue) is smaller.
+
+**Comments:** First, I should emphasize that this is a very simplified, naive model of the
+actual physical system. How strange, in the problem's story the guy pushing the ball upwards
+can measure the sum of position and velocity. Assume that, you are driving a car and the front
+dashboard only shows the sum of how many kilometers you have traveled and the current velocity,
+instead of showing them separately. How would you avoid getting speeding tickets?
+
+In many real life control problems, similar to this hypothetical example you can not be
+aware of the system's all internal states but can only measure a combination (a function) of them.
+
+In the hypothetical example above, if both state variables, $p_t$ and $v_t$ could be measured, 
+the problem would turn into a classical linear quadratic regulator (LQR, state feedback) problem 
+which has a well-know solution.
+
+However, being able to measure a combination of the state variables makes the optimization problem 
+more complicated (possibly non-convex) which is the reason of undershooting blue lines in the
+plot above. Negative values in blue lines mean, the guy stops pushing and leaves the work to
+the gravity time by time, because of the lack of full information of the system's state.
+
+Measuring a combination of the states turns the problem into a static output feedback (SOF) problem.
+Focont implements an approximate dynamic programming based approach to the SOF problem and comes
+up with the solution above.
